@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrorArticleNotFound = errors.New("статья не найдена")
+	ErrorTagNotFound     = errors.New("тэг не найден")
 )
 
 type ArticleRepository interface {
@@ -17,12 +18,12 @@ type ArticleRepository interface {
 	DeleteArticleByID(ctx context.Context, id int) error
 	UpdateArticle(ctx context.Context, article Article) error
 
-	AddTagToArticle(ctx context.Context, tag Tag) error
-	RemoveTagFromArticle(ctx context.Context) error
+	AddTagToArticle(ctx context.Context, articleId, tagId int) error
+	RemoveTagFromArticle(ctx context.Context, articleId, tagId int) error
 }
 
 type TagRepository interface {
-	GetAllTags() error
+	GetAllTags(ctx context.Context) ([]Tag, error)
 	CreateTag(ctx context.Context, tag Tag) error
 	DeleteTagByID(ctx context.Context, id int) error
 }
