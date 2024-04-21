@@ -1,0 +1,20 @@
+services:
+  app:
+    build: ./
+    depends_on:
+      - db
+    networks:
+      - default
+  db:
+    restart: always
+    image: postgres
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgres/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - default
+    ports:
+      - "5432:5432"

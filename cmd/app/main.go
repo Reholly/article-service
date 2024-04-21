@@ -5,9 +5,10 @@ import (
 	"article-service/internal/app"
 	"article-service/internal/config"
 	"context"
+	"time"
 )
 
-const ConfigPath = "./config.yaml"
+const ConfigPath = "././config.yaml"
 
 // @securityDefinitions.apikey Bearer
 // @in header
@@ -19,6 +20,7 @@ const ConfigPath = "./config.yaml"
 // @description Все тела запросов, необходимые токены и возможные ошибки указаны в описании методов.
 
 func main() {
+	time.Sleep(3 * time.Second)
 	cfg, err := config.LoadConfig(ConfigPath)
 	if err != nil {
 		panic(err)
