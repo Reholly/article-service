@@ -17,8 +17,12 @@ type PostgresAdapter struct {
 	connection *sqlx.DB
 }
 
-func NewPostgresAdapter() *PostgresAdapter {
-	return &PostgresAdapter{}
+func NewPostgresAdapter() PostgresAdapter {
+	return PostgresAdapter{}
+}
+
+func (pa *PostgresAdapter) GetConnection() *sqlx.DB {
+	return pa.connection
 }
 
 func (pa *PostgresAdapter) Connect(ctx context.Context, connectionString string) (*sqlx.DB, error) {

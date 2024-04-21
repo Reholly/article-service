@@ -14,7 +14,7 @@ type ArticleRepository interface {
 	FindArticleByID(ctx context.Context, id int) (Article, error)
 	GetAllArticles(ctx context.Context) ([]Article, error)
 
-	CreateArticle(ctx context.Context, article Article) error
+	CreateArticle(ctx context.Context, article Article) (int, error)
 	DeleteArticleByID(ctx context.Context, id int) error
 	UpdateArticle(ctx context.Context, article Article) error
 

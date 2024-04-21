@@ -32,8 +32,8 @@ func (r *TagRepository) GetAllTags(ctx context.Context) ([]domain.Tag, error) {
 }
 
 func (r *TagRepository) CreateTag(ctx context.Context, tag domain.Tag) error {
-	sql := `INSERT INTO tag(id, title) ValUES($1,$2)`
-	return r.db.Execute(ctx, sql, tag.ID, tag.Title)
+	sql := `INSERT INTO tag(title) ValUES($1)`
+	return r.db.Execute(ctx, sql, tag.Title)
 }
 
 func (r *TagRepository) DeleteTagByID(ctx context.Context, id int) error {

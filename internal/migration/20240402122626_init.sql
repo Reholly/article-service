@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS article(
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     text VARCHAR(255) NOT NULL,
-    publication_date TIME NOT NULL,
+    publication_date DATE NOT NULL,
     author_username VARCHAR(255) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS tag(

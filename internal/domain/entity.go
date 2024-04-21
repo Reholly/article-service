@@ -16,3 +16,9 @@ type Tag struct {
 	ID    int
 	Title string
 }
+
+func NewTag(title string) Tag {
+	return Tag{
+		Title: title,
+	}
+}

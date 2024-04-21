@@ -17,13 +17,13 @@ func NewArticleRepository(adapter db.PostgresAdapter) domain.ArticleRepository {
 	return &ArticleRepository{db: adapter}
 }
 
-func (a ArticleRepository) FindArticleByID(ctx context.Context, id int) (domain.Article, error) {
-	sql := `SELECT (id, title, text, publication_date, author_username) 
+func (r *ArticleRepository) FindArticleByID(ctx context.Context, id int) (domain.Article, error) {
+	sql := `SELECT id, title, text, publication_date, author_username
 				FROM article
 				WHERE id = $1`
 
 	var article model.Article
-	err := a.db.Query(ctx, &article, sql, id)
+	err := r.db.QueryRow(ctx, &article, sql, id)
 	if err != nil {
 		if errors.Is(err, sql2.ErrNoRows) {
 			return domain.Article{}, domain.ErrorArticleNotFound
@@ -31,7 +31,7 @@ func (a ArticleRepository) FindArticleByID(ctx context.Context, id int) (domain.
 		return domain.Article{}, err
 	}
 
-	sql = `SELECT (id, title) 
+	sql = `SELECT id, title
 				FROM tag
 				WHERE id IN (
 					SELECT tag_id 	
@@ -39,7 +39,7 @@ func (a ArticleRepository) FindArticleByID(ctx context.Context, id int) (domain.
 						WHERE article_id = $1)`
 
 	var articleTagPairs []model.Tag
-	err = a.db.Query(ctx, &articleTagPairs, sql, id)
+	err = r.db.Query(ctx, &articleTagPairs, sql, id)
 	if err != nil {
 		if errors.Is(err, sql2.ErrNoRows) {
 			return model.MapArticleModelToEntity(article, articleTagPairs), nil
@@ -50,11 +50,11 @@ func (a ArticleRepository) FindArticleByID(ctx context.Context, id int) (domain.
 	return model.MapArticleModelToEntity(article, articleTagPairs), nil
 }
 
-func (a ArticleRepository) GetAllArticles(ctx context.Context) ([]domain.Article, error) {
-	articleQuery := `SELECT (id, title, text, publication_date, author_username) 
+func (r *ArticleRepository) GetAllArticles(ctx context.Context) ([]domain.Article, error) {
+	articleQuery := `SELECT id, title, text, publication_date, author_username
 						FROM article`
 	var articles []model.Article
-	err := a.db.Query(ctx, &articles, articleQuery)
+	err := r.db.Query(ctx, &articles, articleQuery)
 	if err != nil {
 		if errors.Is(err, sql2.ErrNoRows) {
 			return nil, domain.ErrorArticleNotFound
@@ -62,10 +62,10 @@ func (a ArticleRepository) GetAllArticles(ctx context.Context) ([]domain.Article
 		return nil, err
 	}
 
-	tagsQuery := `SELECT (id, title) 
-						FROM tags`
+	tagsQuery := `SELECT id, title
+						FROM tag`
 	var tags []model.Tag
-	err = a.db.Query(ctx, &tags, tagsQuery)
+	err = r.db.Query(ctx, &tags, tagsQuery)
 	if err != nil {
 		if errors.Is(err, sql2.ErrNoRows) {
 			return nil, domain.ErrorTagNotFound
@@ -73,10 +73,10 @@ func (a ArticleRepository) GetAllArticles(ctx context.Context) ([]domain.Article
 		return nil, err
 	}
 
-	articleTagQuery := `SELECT (id, title) 
+	articleTagQuery := `SELECT tag_id, article_id
 							FROM article_tag`
 	var articleTags []model.ArticleTagPair
-	err = a.db.Query(ctx, &articleTags, articleTagQuery)
+	err = r.db.Query(ctx, &articleTags, articleTagQuery)
 	if err != nil {
 		if errors.Is(err, sql2.ErrNoRows) {
 			return nil, domain.ErrorTagNotFound
@@ -88,52 +88,50 @@ func (a ArticleRepository) GetAllArticles(ctx context.Context) ([]domain.Article
 	return result, err
 }
 
-func (a ArticleRepository) CreateArticle(ctx context.Context, article domain.Article) error {
-	sql := `INSERT INTO article(text, title, author_username, publication_date)  VALUES ($1, $2, $3, $4)`
-	err := a.db.Query(ctx, sql, article.Text, article.Title, article.AuthorUsername, article.PublicationDate)
+func (r *ArticleRepository) CreateArticle(ctx context.Context, article domain.Article) (int, error) {
+	sql := `INSERT INTO article(text, title, author_username, publication_date)  VALUES ($1, $2, $3, $4) RETURNING id`
+	var id int
+	err := r.db.ExecuteAndGet(ctx, &id, sql, article.Text, article.Title, article.AuthorUsername, article.PublicationDate)
 	if err != nil {
-		if errors.Is(err, sql2.ErrNoRows) {
-			return domain.ErrorArticleNotFound
-		}
-		return err
+		return 0, err
 	}
 
 	for _, tag := range article.Tags {
-		err = a.AddTagToArticle(ctx, article.ID, tag.ID)
+		err = r.AddTagToArticle(ctx, id, tag.ID)
 		if err != nil {
-			return err
+			return 0, err
 		}
 	}
 
-	return nil
+	return id, nil
 }
 
-func (a ArticleRepository) DeleteArticleByID(ctx context.Context, id int) error {
+func (r *ArticleRepository) DeleteArticleByID(ctx context.Context, id int) error {
 	sql := `DELETE FROM article WHERE id = $1`
-	err := a.db.Execute(ctx, sql, id)
+	err := r.db.Execute(ctx, sql, id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (a ArticleRepository) UpdateArticle(ctx context.Context, article domain.Article) error {
+func (r *ArticleRepository) UpdateArticle(ctx context.Context, article domain.Article) error {
 	sql := `UPDATE article 
 				SET text=$1, title=$2, author_username=$3, publication_date=$4 
 				WHERE id = $5`
-	err := a.db.Execute(ctx, sql, article.Text, article.Title, article.AuthorUsername, article.PublicationDate, article.ID)
+	err := r.db.Execute(ctx, sql, article.Text, article.Title, article.AuthorUsername, article.PublicationDate, article.ID)
 	if err != nil {
 		return err
 	}
 
 	sql = `DELETE FROM article_tag WHERE article_id = $1`
-	err = a.db.Execute(ctx, sql, article.ID)
+	err = r.db.Execute(ctx, sql, article.ID)
 	if err != nil {
 		return err
 	}
 
 	for _, tag := range article.Tags {
-		err = a.AddTagToArticle(ctx, article.ID, tag.ID)
+		err = r.AddTagToArticle(ctx, article.ID, tag.ID)
 		if err != nil {
 			return err
 		}
@@ -142,21 +140,21 @@ func (a ArticleRepository) UpdateArticle(ctx context.Context, article domain.Art
 	return nil
 }
 
-func (a ArticleRepository) AddTagToArticle(ctx context.Context, articleId, tagId int) error {
+func (r *ArticleRepository) AddTagToArticle(ctx context.Context, articleId, tagId int) error {
 	sql := `INSERT INTO 
     			article_tag(article_id, tag_id) 
 				VALUES ($1, $2)`
-	err := a.db.Execute(ctx, sql, articleId, tagId)
+	err := r.db.Execute(ctx, sql, articleId, tagId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (a ArticleRepository) RemoveTagFromArticle(ctx context.Context, articleId, tagId int) error {
+func (r *ArticleRepository) RemoveTagFromArticle(ctx context.Context, articleId, tagId int) error {
 	sql := `DELETE FROM article_tag
 				WHERE article_id = $1 AND tag_id = $2`
-	err := a.db.Execute(ctx, sql, articleId, tagId)
+	err := r.db.Execute(ctx, sql, articleId, tagId)
 	if err != nil {
 		return err
 	}
