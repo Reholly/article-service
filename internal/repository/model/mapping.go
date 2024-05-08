@@ -24,8 +24,8 @@ func MapToArticleEntities(articles []Article, articleTags []ArticleTagPair, tags
 				for _, tag := range tags {
 					if tag.ID == articleTag.TagID {
 						neededTags = append(neededTags, tag)
+						break
 					}
-					break
 				}
 			}
 		}

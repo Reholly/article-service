@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-const ConfigPath = "././config.yaml"
+const (
+	ConfigDevPath = "././config.yaml"
+	ConfigPath    = "./config.yaml"
+)
 
 // @securityDefinitions.apikey Bearer
 // @in header
@@ -20,13 +23,15 @@ const ConfigPath = "././config.yaml"
 // @description Все тела запросов, необходимые токены и возможные ошибки указаны в описании методов.
 
 func main() {
-	time.Sleep(3 * time.Second)
-	cfg, err := config.LoadConfig(ConfigPath)
+	time.Sleep(10 * time.Second)
+
+	cfg, err := config.LoadConfig(ConfigDevPath)
 	if err != nil {
 		panic(err)
 	}
 
 	application := app.NewApplication(cfg)
+
 	ctx := context.Background()
 	err = application.Init(ctx)
 	if err != nil {

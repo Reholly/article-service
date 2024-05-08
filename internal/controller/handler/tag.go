@@ -7,6 +7,7 @@ import (
 	"article-service/internal/repository"
 	"article-service/internal/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -58,6 +59,8 @@ func (h *TagHandler) CreateTag(c *gin.Context) {
 		c.AbortWithStatusJSON(apiError.StatusCode, apiError)
 		return
 	}
+
+	log.Println("INFO: был создан тэг:", tag)
 	c.JSON(response.SuccessResult.StatusCode, response.SuccessResult)
 }
 
@@ -97,6 +100,7 @@ func (h *TagHandler) DeleteTag(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: был удален тег id: ", id)
 	c.JSON(response.SuccessResult.StatusCode, response.SuccessResult)
 }
 
@@ -120,5 +124,6 @@ func (h *TagHandler) GetAllTags(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: были получены все тэги")
 	c.JSON(http.StatusOK, dto.MapToTagDtos(tags))
 }

@@ -7,6 +7,7 @@ import (
 	"article-service/internal/repository"
 	"article-service/internal/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -68,6 +69,7 @@ func (h *ArticleHandler) CreateArticle(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: была создана статья пользователем: ", username)
 	c.JSON(response.SuccessResult.StatusCode, response.SuccessResult)
 }
 
@@ -106,6 +108,7 @@ func (h *ArticleHandler) DeleteArticle(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: была удалена статья id: ", id)
 	c.JSON(response.SuccessResult.StatusCode, response.SuccessResult)
 }
 
@@ -146,6 +149,7 @@ func (h *ArticleHandler) UpdateArticle(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: была обновлена статья: ", updatedArticle)
 	c.JSON(response.SuccessResult.StatusCode, response.SuccessResult)
 }
 
@@ -184,6 +188,7 @@ func (h *ArticleHandler) GetArticleById(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: была получена статья с id: ", id)
 	c.JSON(http.StatusOK, article)
 }
 
@@ -207,5 +212,6 @@ func (h *ArticleHandler) GetAllArticles(c *gin.Context) {
 		return
 	}
 
+	log.Println("INFO: были получены статьи")
 	c.JSON(http.StatusOK, dto.MapToArticleDtos(articles))
 }

@@ -34,7 +34,6 @@ func (router *Router) StartRouting() {
 	articleHandler := handler.NewArticleHandler(router.repository, router.service)
 	tagHandler := handler.NewTagHandler(router.repository, router.service)
 
-	gin.SetMode(gin.ReleaseMode)
 	g := gin.New()
 
 	g.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -67,7 +66,7 @@ func (router *Router) StartRouting() {
 		c.Status(http.StatusOK)
 	})
 
-	go func() { _ = g.Run(router.address) }()
+	go func() { _ = g.Run() }()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit

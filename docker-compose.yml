@@ -1,6 +1,6 @@
 services:
   app:
-    build: ./
+    image: reholly/article-service:v1.0.2
     depends_on:
       - db
     networks:
@@ -11,10 +11,10 @@ services:
     volumes:
       - ./.database/postgres/data:/var/lib/postgres/data
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${DB}
     networks:
       - default
     ports:
-      - "5432:5432"
+      - "5435:5432"
