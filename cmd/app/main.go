@@ -5,6 +5,7 @@ import (
 	"article-service/internal/app"
 	"article-service/internal/config"
 	"context"
+	"time"
 )
 
 const (
@@ -22,6 +23,8 @@ const (
 // @description Все тела запросов, необходимые токены и возможные ошибки указаны в описании методов.
 
 func main() {
+	time.Sleep(10 * time.Second)
+
 	cfg, err := config.LoadConfig(ConfigDevPath)
 	if err != nil {
 		panic(err)
