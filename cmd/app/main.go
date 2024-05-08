@@ -24,7 +24,6 @@ const (
 
 func main() {
 	time.Sleep(10 * time.Second)
-
 	cfg, err := config.LoadConfig(ConfigDevPath)
 	if err != nil {
 		panic(err)
