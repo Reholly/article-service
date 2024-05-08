@@ -1,0 +1,366 @@
+definitions:
+  dto.Article:
+    properties:
+      author:
+        type: string
+      id:
+        type: integer
+      publication_date:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/dto.Tag'
+        type: array
+      text:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.ArticleCreation:
+    properties:
+      tags:
+        items:
+          $ref: '#/definitions/dto.Tag'
+        type: array
+      text:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.Tag:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.TagCreation:
+    properties:
+      title:
+        type: string
+    type: object
+  response.APIResult:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |-
+    article-service API
+    Это сваггер-документация для сервиса статей: управление статьями, тегами.
+    Все тела запросов, необходимые токены и возможные ошибки указаны в описании методов.
+paths:
+  /api/article:
+    get:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для получения всех статей.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Article'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      summary: Получение всех статей
+      tags:
+      - article
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Этот эндпоинт нужен создания статьи. Принимиает Заголовок, Текст (может быть пустым), имя автора и тэги.
+        Требует админского доступа.
+      parameters:
+      - description: Create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ArticleCreation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      security:
+      - Bearer: []
+      summary: Создание статьи
+      tags:
+      - article
+    put:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для обновления статьи, только текст может быть
+        пустым. Требует админского доступа.
+      parameters:
+      - description: Update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      security:
+      - Bearer: []
+      summary: Обновление статьи
+      tags:
+      - article
+  /api/article/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для удаления статьи по ID. Требует админского
+        доступа.
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      security:
+      - Bearer: []
+      summary: Удаление статьи
+      tags:
+      - article
+    get:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для получения статьи по ID. Сигнатура описана
+        ниже.
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Article'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      summary: Получение статьи по ID
+      tags:
+      - article
+  /api/tag:
+    get:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для получения всех тэгов.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      summary: Получение всех тэгов.
+      tags:
+      - tag
+    post:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для получения создания тэга, принимает только
+        название. Если тэг уже есть, то вернет ошибку.
+      parameters:
+      - description: Create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TagCreation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      security:
+      - Bearer: []
+      summary: Создание тэга
+      tags:
+      - tag
+  /api/tag/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Этот эндпоинт нужен для получения удаления тэга, принимает только
+        ID.
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResult'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.APIResult'
+      security:
+      - Bearer: []
+      summary: Удаления тэга
+      tags:
+      - tag
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
