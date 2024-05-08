@@ -48,5 +48,6 @@ jobs:
           port: 22
           script: | 
             cd /home/admin/kforge/article
+            docker compose down 
             docker compose up -d --build
 
