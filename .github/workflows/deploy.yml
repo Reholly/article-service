@@ -47,6 +47,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: | 
-            cd /home/admin/kforge/article
-            docker compose up -d --build
+            echo Hello!
 
