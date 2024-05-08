@@ -9,6 +9,7 @@ import (
 	serviceImpl "article-service/internal/service/implementation"
 	"article-service/lib/adapters/db"
 	"context"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -50,7 +51,7 @@ func (app *Application) Init(ctx context.Context) error {
 	}
 	err = migrator.Seed()
 	if err != nil {
-
+		log.Fatal("ERROR: ", err)
 	}
 
 	return nil
